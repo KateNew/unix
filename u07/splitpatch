@@ -1,0 +1,14 @@
+#!/bin/sh
+
+patchname=${1}
+dict=${2}
+
+csplit -s -z $patchname '/^diff/' {*}
+for file in "xx*";
+do
+	name=$(head -n1 $file | cut -d" " -f3 | sed 's/a\///' | sed 's/\//-/')
+	name=$name".patch"
+	mv "$file" "$name"
+	mv "$name" "$dict"
+done
+
