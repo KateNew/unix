@@ -1,0 +1,13 @@
+#!/bin/sh
+
+echo "<html><body>"
+jpg=".jpg"
+thumb=".thumb.jpg"
+
+while [ $# != 0 ] 
+do
+	a=$(echo $1 | sed 's/.jpg/.thumb.jpg/')
+	echo "<a href=\"$1\"><img src=\"$a\"></a>"
+	shift
+done 	
+echo "</body></html>"
