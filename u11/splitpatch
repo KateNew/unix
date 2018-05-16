@@ -1,0 +1,67 @@
+#!/bin/sh
+
+input=0
+output=0
+ret_val=1
+
+while [ -n "$1" ]; do
+	ret_val=0
+	case "$1" in
+		-i) shift
+			if [ $# -eq 0 ] || [ "$1" = "-d" ]; then
+				input=0
+			else 
+				input=1
+				patchname=${1}
+				shift
+			fi
+			;;
+		-d) shift
+			if [ $# -eq 0 ] || [ "$1" = "-i" ]; then
+			       	output=0
+		        else
+				output=1
+				dict=${1}
+				shift
+			fi
+			;;
+		-*)
+			ret_val=1
+			echo "parametry"
+			break
+			;;
+	esac
+done
+
+if [ $ret_val -eq 0 ]; then
+
+	if [ $input -eq 0 ]; then
+		csplit -s -z - '/^diff/' {*}
+	fi
+
+	if [ $output -eq 0 ]; then
+		if [ $input -eq 0 ]; then
+			echo "Nebyl zadan nazev vystupniho adresare!"
+			exit 
+		fi
+		if [ $input -eq 1 ]; then 
+			dict="$patchname.patch"
+		fi
+	fi
+	
+	if [ $input -eq 1 ]; then 
+		csplit -s -z $patchname '/^diff/' {*}
+	fi
+	mkdir "$dict"
+	for file in xx*;
+	do
+		name=$(head -n1 $file | cut -d" " -f3 | sed 's/a\///' | sed 's/\//-/')
+		name="$name.patch"
+		mv "$file" "$name"
+		mv "$name" "$dict"
+	done
+fi
+
+if [ $ret_val -eq 1 ]; then
+	echo "Spatny pocet parametru!"
+fi
